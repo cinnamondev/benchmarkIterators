@@ -82,9 +82,9 @@ fn get_map(key: &str, len:usize) -> HashMap<String, Progress> {
 
 fn get_vec_map(lenx: usize, leny:usize) -> Vec<HashMap<String, Progress>> {
     use Progress::*;
-    let mut vec: Vec<HashMap<String,Progress>> = Vec::with_capacity(lenx);
-    for i in 0..vec.len(){
-        vec[i] = get_map(&format!("vec,{},{}", lenx,leny), leny);
+    let mut vec: Vec<HashMap<String,Progress>> = Vec::new();
+    for i in 0..lenx{
+        vec.push( get_map(&format!("vec,{},{}", lenx,leny), leny));
     };
     vec
 }
@@ -93,7 +93,7 @@ fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("collections");
     //let hashCollection = get_vec_map(1);
     let limity = 1001; // How large hash map can be
-    for i in 900..limity {
+    for mut i in 0..limity {
             let val = get_vec_map(10,i);
             group.bench_with_input(BenchmarkId::new("Flatten",i),
                                    &(&val,Progress::Complete),
@@ -125,40 +125,8 @@ fn criterion_benchmark(c: &mut Criterion) {
                                    |f,(vec,val)|
                                        f.iter(||count_collection_parralel(vec, *val))
             );
+            i ^= 2;
         };
-    for i in 0..100 {
-        let val = get_vec_map(10,i);
-        group.bench_with_input(BenchmarkId::new("Flatten",i),
-                               &(&val,Progress::Complete),
-                               |f,(vec,val)|
-                                   f.iter(||count_collection_flatten(vec, *val))
-        );
-        group.bench_with_input(BenchmarkId::new("Flatten2",i),
-                               &(&val,Progress::Complete),
-                               |f,(vec,val)|
-                                   f.iter(||count_collection_flatten2(vec, *val))
-        );
-        group.bench_with_input(BenchmarkId::new("Kyran Map",i),
-                               &(&val,Progress::Complete),
-                               |f,(vec,val)|
-                                   f.iter(||count_collection_kyranFix(vec, *val))
-        );
-        group.bench_with_input(BenchmarkId::new("fold",i),
-                               &(&val,Progress::Complete),
-                               |f,(vec,val)|
-                                   f.iter(||count_collection_fold(vec, *val))
-        );
-        group.bench_with_input(BenchmarkId::new("Map",i),
-                               &(&val,Progress::Complete),
-                               |f,(vec,val)|
-                                   f.iter(||count_collection_map(vec, *val))
-        );
-        group.bench_with_input(BenchmarkId::new("Parralel", i),
-                               &(&val,Progress::Complete),
-                               |f,(vec,val)|
-                                   f.iter(||count_collection_parralel(vec, *val))
-        );
-    };
     group.finish();
 }
 
