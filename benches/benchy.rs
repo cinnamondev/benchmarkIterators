@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
+use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId, PlotConfiguration, AxisScale};
 use std::collections::HashMap;
 use rayon::prelude::*;
 
@@ -91,6 +91,8 @@ fn get_vec_map(lenx: usize, leny:usize) -> Vec<HashMap<String, Progress>> {
 
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("collections");
+    group.plot_config(PlotConfiguration::default()
+        .summary_scale(AxisScale::Logarithmic));
     //let hashCollection = get_vec_map(1);
     let limity = 1000000; // How large hash map can be
     let mut i = 2;      // lets have some fun with this
