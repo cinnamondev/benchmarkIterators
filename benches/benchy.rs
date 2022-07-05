@@ -92,8 +92,9 @@ fn get_vec_map(lenx: usize, leny:usize) -> Vec<HashMap<String, Progress>> {
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("collections");
     //let hashCollection = get_vec_map(1);
-    let limity = 1001; // How large hash map can be
-    for mut i in 0..limity {
+    let limity = 1000000; // How large hash map can be
+    let mut i = 2;      // lets have some fun with this
+    while i < limity {
             let val = get_vec_map(10,i);
             group.bench_with_input(BenchmarkId::new("Flatten",i),
                                    &(&val,Progress::Complete),
@@ -125,7 +126,7 @@ fn criterion_benchmark(c: &mut Criterion) {
                                    |f,(vec,val)|
                                        f.iter(||count_collection_parralel(vec, *val))
             );
-            i ^= 2;
+            i*=3;
         };
     group.finish();
 }
